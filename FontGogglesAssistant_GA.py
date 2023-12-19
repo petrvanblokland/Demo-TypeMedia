@@ -1,0 +1,68 @@
+#
+#    GlyphsApp version of the FontGoggles Assistant.
+#    Open FontGoggles and drag the fonts on the window that you want to show samples of.
+#    Run this script in RoboFont, notice that a small window pops at the topleft of your screen
+#    that holds the sample string. 
+#    Open a font and select a glyph.
+#    Select the sample (top-right button) in the directory of the current font 
+#    named "FontGoggles-RF-Sync.txt"
+#    Changing the current selection reflects in the showing of another sample in FontGoggles.
+#    Note that saving the font in RoboFont will immediately show the changes in FontGoggles as well.
+#
+import codecs
+import vanilla
+from vanilla import FloatingWindow, EditText, TextBox
+
+# Initial template string. The /? gets replaced by the unicode of the current glyph.
+SAMPLE = 'A/?AH/?HO/?OV/?Va/?ai/?io/?ov/?v'
+# Name of the file that will be synce in the directory of the current font.
+SAMPLE_FILE_NAME = 'FontGoggles-GA-Sync.txt'
+
+class FontGogglesAssistant:
+    def __init__(self):
+    	self.currentGlyph = None # Store the current glyph here, so we can if there was a change.
+        w, h = 300, 60
+        # Create the window. Position is from top-left of the screen. 
+        self.w = FloatingWindow((50, 50, w, h), 'FontGoggles Assistant')
+        # Text box to enter an alternative sample text. /? is replaced by the current glyph unicode
+        self.w.sampleTextLabel = TextBox((10, 6, -10, 24), 'Sample text in FontGoggles (replace /?)', sizeStyle="small")
+        self.w.sampleText = EditText((10, 24, -10, 24), SAMPLE, callback=self.sampleTextCallback)
+        # Get a call from GlyhpsApp when drawing is done.
+        Glyphs.addCallback(self.drawForegroundCallback, DRAWFOREGROUND )
+        # Add binding to remove the obeserver if the window is closed.
+        self.w.bind('close', self.windowCloseCallback)
+        # Open the window with the sample text pattern
+        self.w.open()
+
+    def windowCloseCallback(self, sender):
+        """Window is closing, remove the callback"""
+        Glyphs.removeCallback(self.drawForegroundCallback)
+        
+    def sampleTextCallback(self, sender):
+        """The sample was changed, update the file"""
+        self.updateGogglesFile()
+        
+    def drawForegroundCallback(self, layer, info):
+        """GlyphApp wants to draw an update, check if still doing that on the same glyph, 
+        otherwise update the file"""
+        
+        if self.currentGlyph is None or layer.parent.name != self.currentGlyph.name:
+            self.currentGlyph = layer.parent
+            self.updateGogglesFile()
+        
+    def updateGogglesFile(self):
+        """Main function to update the FontGoggles sample file. """
+        # Get the current selected glyph. This can be from the EditorWindow or the FontWindow
+        # FontGoggles can only show characters with unicode. Stylistic sets will show alternatives.
+        if self.currentGlyph is not None and self.currentGlyph.unicode is not None:
+            print('assasa', self.currentGlyph.unicode)
+            char = unichr(int('0x'+self.currentGlyph.unicode, 16)) # Get the character of this unicode
+            font = self.currentGlyph.parent # Get the font to know where to write the file
+            # Get the path of the current font and calculate the output file path local to it.
+            path = '/'.join(font.filepath.split('/')[:-1]) + '/' + SAMPLE_FILE_NAME
+            sample = self.w.sampleText.get().replace('/?', char) # Get the sample and replace pattern /?
+            f = codecs.open(path, 'w', encoding='utf-8') # Open file, for unicode/UTF-8
+            f.write(sample) 
+            f.close()
+ 
+FontGogglesAssistant()
