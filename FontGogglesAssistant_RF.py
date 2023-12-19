@@ -17,7 +17,7 @@ import codecs
 from mojo.events import addObserver, removeObserver
 from mojo.roboFont import CurrentGlyph, CurrentFont
 
-# Added line by Petr
+# Added line by Fabio also
 
 # Initial template string. The /? gets replaced by the unicode of the current glyph.
 SAMPLE = 'A/?AH/?HO/?OV/?Va/?ai/?io/?ov/?v'
