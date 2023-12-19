@@ -14,6 +14,8 @@ import codecs
 from mojo.events import addObserver, removeObserver
 from mojo.roboFont import CurrentGlyph, CurrentFont
 
+# Added line
+
 # Initial template string. The /? gets replaced by the unicode of the current glyph.
 SAMPLE = 'A/?AH/?HO/?OV/?Va/?ai/?io/?ov/?v'
 # Name of the file that will be synce in the directory of the current font.
