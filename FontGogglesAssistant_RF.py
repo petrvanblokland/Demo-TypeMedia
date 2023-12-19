@@ -9,6 +9,9 @@
 #    Changing the current selection reflects in the showing of another sample in FontGoggles.
 #    Note that saving the font in RoboFont will immediately show the changes in FontGoggles as well.
 #
+
+# other added line
+
 from vanilla import FloatingWindow, EditText, TextBox
 import codecs
 from mojo.events import addObserver, removeObserver
