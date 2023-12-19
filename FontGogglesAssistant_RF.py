@@ -10,14 +10,12 @@
 #    Note that saving the font in RoboFont will immediately show the changes in FontGoggles as well.
 #
 
-# other added line
-
-from vanilla import FloatingWindow, EditText, TextBox
+from random import choice
+from ulwords import ULCWORDS
+from vanilla import FloatingWindow, Window, EditText, TextBox
 import codecs
 from mojo.events import addObserver, removeObserver
 from mojo.roboFont import CurrentGlyph, CurrentFont
-
-# Added line by Fabio also
 
 # Initial template string. The /? gets replaced by the unicode of the current glyph.
 SAMPLE = 'A/?AH/?HO/?OV/?Va/?ai/?io/?ov/?v'
@@ -57,10 +55,10 @@ class FontGogglesAssistant:
         glyph = CurrentGlyph()
         if glyph.unicode: # FontGoggles can only show characters with unicode. Stylistic sets will show alternatives.
             char = chr(glyph.unicode) # Get the character of this unicode
-            font = glyph.getParent() # Get the font to know where to write the file
+            font = glyph.font # Get the font to know where to write the file
             # Get the path of the current font and calculate the output file path local to it.
             path = '/'.join(font.path.split('/')[:-1]) + '/' + SAMPLE_FILE_NAME
-            sample = self.w.sampleText.get().replace('/?', char) # Get the sample and replace pattern /?
+            sample = choice(ULCWORDS) + ' ' + self.w.sampleText.get().replace('/?', char) # Get the sample and replace pattern /?
             f = codecs.open(path, 'w', encoding='utf-8') # Open file, for unicode/UTF-8
             f.write(sample) 
             f.close()
